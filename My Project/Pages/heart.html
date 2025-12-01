@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>قلب مرسوم - CSS & SVG</title>
+<style>
+  /* تنسيق عام لصفحة وسطية */
+  :root{
+    --bg: #0f1724;          /* خلفية */
+    --accent: #ff4d6d;      /* لون القلب */
+    --stroke: #ffd6de;      /* ظل/خط الرسم */
+  }
+  html,body{
+    height:100%;
+    margin:0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: radial-gradient(circle at 20% 10%, #122033 0%, var(--bg) 45%);
+    color:#fff;
+  }
+  .wrap{
+    min-height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+    box-sizing:border-box;
+    flex-direction:column;
+    gap:28px;
+  }
+
+  /* لوحة SVG المركزية */
+  .heart-scene{
+    width:min(86vmin,760px);
+    max-width:92%;
+    aspect-ratio:1/1;
+    display:grid;
+    place-items:center;
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.6));
+  }
+
+  /* إعدادات الرسم: جعل مسار الخط قابل للأنيميشن */
+  svg{
+    width:100%;
+    height:100%;
+    overflow:visible;
+  }
+
+  /* مسار الحدود (stroke) الذي يظهر كأنه يُرسم */
+  .heart-outline {
+    fill: transparent;            /* لا نملأ فورا */
+    stroke: var(--stroke);
+    stroke-width:10;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    stroke-dasharray: 1200;       /* قيمة كبيرة كافية لطول المسار */
+    stroke-dashoffset: 1200;      /* نخفى المسار بالكامل في البداية */
+    animation: draw 15s ease forwards;
+  }
+
+  /* بعد انتهاء رسم الحدود، نملأ القلب تدريجياً */
+  .heart-fill {
+    fill: transparent;
+    stroke: transparent;
+    animation: fillUp 10s ease 2.0s forwards; /* يبدأ بعد انتهاء draw */
+  }
+
+  /* وهنا تأثير نبضة خفيفة للقلب بعد الملء لإضفاء حياة */
+  .heart-group {
+    transform-origin: 50% 50%;
+    animation: pulse 1.0s ease 3.2s 1 forwards;
+  }
+
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes fillUp {
+    to {
+      fill: var(--accent);
+    }
+  }
+  @keyframes pulse {
+    0%   { transform: scale(1); filter: drop-shadow(0 8px 20px rgba(255,77,109,0.14)); }
+    30%  { transform: scale(1.06); }
+    70%  { transform: scale(0.98); }
+    100% { transform: scale(1); }
+  }
+
+  /* نص توضيحي أسفل القلب */
+  .caption{
+    text-align:center;
+    font-size:clamp(14px,2.2vmin,18px);
+    opacity:0.9;
+  }
+
+  /* لمسة جمالية: نقاط متوهجة صغيرة حول القلب */
+  .glow {
+    position: absolute;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    mix-blend-mode:screen;
+  }
+  .glow::before, .glow::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    background: radial-gradient(circle at 30% 20%, rgba(255,77,109,0.18) 0%, transparent 15%),
+                radial-gradient(circle at 70% 80%, rgba(255,200,215,0.10) 0%, transparent 18%);
+    opacity:0;
+    animation: glowIn 0.8s ease 2.2s forwards;
+  }
+  @keyframes glowIn { to { opacity:1; } }
+
+  /* استجابة الهاتف */
+  @media (max-width:520px){
+    .heart-outline { stroke-width:8; stroke-dasharray:900; stroke-dashoffset:900; }
+  }
+
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="heart-scene" aria-hidden="false">
+      <!-- SVG قلب بمسار واحد: المسار مُعد ليعطي شكل قلب جميل -->
+      <svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMid meet" role="img" aria-label="قلب مرسوم">
+        <g class="heart-group">
+          <!-- مسار الحدود: هذا المسار سيكون مُرسوماً -->
+          <path class="heart-outline"
+            d="M60 100
+               C60 100, 12 70, 12 40
+               C12 23, 28 12, 44 26
+               C50 31, 60 40, 60 40
+               C60 40, 70 31, 76 26
+               C92 12, 108 23, 108 40
+               C108 70, 60 100, 60 100 Z" />
+          <!-- نفس المسار يُملأ بعد رسم الحدود -->
+          <path class="heart-fill"
+            d="M60 100
+               C60 100, 12 70, 12 40
+               C12 23, 28 12, 44 26
+               C50 31, 60 40, 60 40
+               C60 40, 70 31, 76 26
+               C92 12, 108 23, 108 40
+               C108 70, 60 100, 60 100 Z" />
+        </g>
+      </svg>
+      <div class="glow" aria-hidden="true"></div>
+    </div>
+
+    <div class="caption">
+      قلب مرسوم بتقنية SVG + CSS — سيُرسم الحد أولاً ثم يملأ باللون.
+    </div>
+  </div>
+</body>
+</html>
